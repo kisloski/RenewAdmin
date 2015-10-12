@@ -1,0 +1,6 @@
+c:\users\piotrek\documents\visual studio 2015\Projects\RenewAdmin\RenewAdmin\bin\Debug\RenewAdmin.exe.config
+c:\users\piotrek\documents\visual studio 2015\Projects\RenewAdmin\RenewAdmin\bin\Debug\RenewAdmin.exe
+c:\users\piotrek\documents\visual studio 2015\Projects\RenewAdmin\RenewAdmin\bin\Debug\RenewAdmin.pdb
+c:\users\piotrek\documents\visual studio 2015\Projects\RenewAdmin\RenewAdmin\obj\Debug\RenewAdmin.csprojResolveAssemblyReference.cache
+c:\users\piotrek\documents\visual studio 2015\Projects\RenewAdmin\RenewAdmin\obj\Debug\RenewAdmin.exe
+c:\users\piotrek\documents\visual studio 2015\Projects\RenewAdmin\RenewAdmin\obj\Debug\RenewAdmin.pdb

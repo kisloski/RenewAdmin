@@ -1,0 +1,7 @@
+<config>
+  <domainEnvironment>false</domainEnvironment>
+  <userName>Piotrek</userName>
+  <groupName>Administratorzy</groupName>
+  <reportPath>report.xml</reportPath>
+  <state>0</state>
+</config>
