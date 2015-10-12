@@ -127,6 +127,14 @@ namespace RenewAdmin
             XmlElement r = report.CreateElement("H");
             r.SetAttribute("ID", (root.ChildNodes.Count + 1).ToString());
             r.SetAttribute("Date", DateTime.Now.ToString());
+            if (state == 999)
+            {
+                r.SetAttribute("State", "StartUp");
+            }
+            else
+            {
+                r.SetAttribute("State", state.ToString());
+            }
             r.SetAttribute("State", state.ToString());
             r.SetAttribute("Val", msg);
             root.AppendChild(r);
