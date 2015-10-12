@@ -27,20 +27,20 @@ namespace RenewAdmin
         static void Main(string[] args)
         {
             #region Variable setup
+            //Setting up all neccessary variables
             _systemDrive = Path.GetPathRoot(Environment.SystemDirectory);
             _batchPath = _systemDrive + "Windows\\System32\\GroupPolicy\\Machine\\Scripts\\Startup\\RenewAdmin.bat";
-            //_batchPath = _systemDrive + "SYF\\renewAdminTest.bat";
             _scriptPath = _systemDrive + "Windows\\System32\\GroupPolicy\\Machine\\Scripts\\scripts.ini";
-            //_scriptPath = _systemDrive + "SYF\\scripts.ini";
             _gptPath = _systemDrive + "Windows\\System32\\GroupPolicy\\gpt.ini";
-            //_gptPath = _systemDrive + "SYF\\gpt.ini";
             _args = args;
             #endregion
 
+            //_Config parse, setting up the initial object
             _Config = OptionSet.configParse(args[0].ToString());
             _Config.LogHistory( 999, "Start. Checking state.");
             _Config.LogHistory(_Config.state, "Running state: " + _Config.state.ToString());
 
+            //Main if - determine actions
             if (_Config.state == 0)
             { prep(); }
             else if (_Config.state == 1)
@@ -53,6 +53,7 @@ namespace RenewAdmin
         {
             _Config.LogHistory(0, "Starting Prep() method.");
             #region Create RenewAdmin.bat
+            //Create script for startup tasks
             if (!File.Exists(_batchPath))
             {
                 StreamWriter w = new StreamWriter(_batchPath);
@@ -67,6 +68,7 @@ namespace RenewAdmin
 
 
             #region Editing scripts.ini
+            // Modifing scripts.ini to accomodate new script
             Guid g = Guid.NewGuid();
             _newScriptPath = _scriptPath + ".old" + g.ToString();
             File.Copy(_scriptPath, _newScriptPath);
@@ -95,6 +97,7 @@ namespace RenewAdmin
 
 
             #region Editing gpt.ini
+            // Modifing gpt.ini, pump Version parameter
             int vers = 0;
             Guid gu = Guid.NewGuid();
             _newGptPath = _gptPath + ".old" + gu.ToString();
@@ -119,6 +122,7 @@ namespace RenewAdmin
 
 
             #region Run gpupdate
+            //Quiet gpupdate
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -134,6 +138,7 @@ namespace RenewAdmin
         }
         public static void execution()
         {
+            //Execution method - check if script had an effect. Check _Config.username membership in _Config.groupname
             _Config.LogHistory(_Config.state, "Starting execution() method.");
             PrincipalContext ctx = new PrincipalContext(ContextType.Machine);
             UserPrincipal user = UserPrincipal.FindByIdentity(ctx, IdentityType.SamAccountName, _Config.userName);
@@ -149,13 +154,15 @@ namespace RenewAdmin
             {
                 if (_Config.GetSecondaryReboots() < 3)
                 {
+                    //Backup plan - secondary reboots
                     _Config.LogHistory(_Config.state, String.Format("User: {0} didn't regain membership in Group: {1}. Initializing secondary reboot {2}.", _Config.userName, _Config.groupName, (_Config.GetSecondaryReboots() + 1).ToString()));
                     forceReboot(_Config.state, 2);
                 }
                 else
                 {
+                    //Total fail - primary and secondary reboots didn't work
                     _Config.LogHistory(_Config.state, String.Format("User: {0} didn't regain membership in Group: {1}. Secondary reboots failed", _Config.userName, _Config.groupName));
-                    //_Config.goToState(2);
+                    _Config.goToState(2);
                     _Config.LogResults();
                     forceReboot(_Config.state, 1);
                 }
@@ -168,6 +175,7 @@ namespace RenewAdmin
             _newScriptPath = _Config.retrieveSessionVars("scripts");
 
             #region Create cleanup.bat
+            //Create cleaner.bat that will remove any signs of activity;
             _Config.LogHistory(_Config.state, "Starting cleanup() method.");
             StreamWriter cleanup = new StreamWriter(_appPath + "\\cleanup.bat");
             cleanup.WriteLine(@"@Echo off");
@@ -182,6 +190,7 @@ namespace RenewAdmin
             #endregion
 
             #region Restore scripts.ini
+            //Removing script path from scripts.ini
             string newpath = _newScriptPath.Substring(0, _newScriptPath.Length - 40);
             try
             {
@@ -194,6 +203,7 @@ namespace RenewAdmin
             #endregion
 
             #region Restore gpt.ini
+            //Modifing gpt.ini
             int vers = 0;
             string line = "";
             try
@@ -219,6 +229,7 @@ namespace RenewAdmin
                 _Config.LogHistory(_Config.state, e.Message);
             }
 
+            //Silent gpupdate
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -228,10 +239,12 @@ namespace RenewAdmin
             process.Start();
             #endregion
 
+            //Run cleaner.bat
             System.Diagnostics.Process.Start("cleaner.bat");
         }
         public static void forceReboot(int state, int rType)
         {
+            //Force reboot method
             _Config.LogReboots(state, rType);
             System.Diagnostics.Process.Start("shutdown.exe", "-r -t 60");
         }

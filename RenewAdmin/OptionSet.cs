@@ -12,6 +12,7 @@ namespace RenewAdmin
 {
     public class OptionSet
     {
+        //OptionSet properties
         public bool domainEnv { get; set; }
         public string userName { get; set; }
         public string groupName { get; set; }
@@ -21,6 +22,7 @@ namespace RenewAdmin
 
         public static OptionSet configParse(string configPath)
         {
+            //Parser method - gets properties values from config.xml
             OptionSet result = new OptionSet();
             XmlDocument config = new XmlDocument();
 
@@ -36,6 +38,7 @@ namespace RenewAdmin
             node = config.DocumentElement.SelectSingleNode("/config/state");
             result.state = Convert.ToInt16(node.InnerText);
             result.cPath = Program._args[0].ToString();
+            //Creating report XML
             if (!File.Exists(result.reportPath))
             {
                 using (XmlWriter writer = XmlWriter.Create(result.reportPath))
@@ -58,7 +61,8 @@ namespace RenewAdmin
             return result;
         }
         public void goToState(int newState)
-        {            
+        {   
+            //State changing method
             XmlDocument toSave = new XmlDocument();
             toSave.Load(Program._Config.cPath);
             XmlNode state = toSave.DocumentElement.SelectSingleNode("/config/state");
@@ -68,6 +72,7 @@ namespace RenewAdmin
         #region Session Variables
         public void recordSessionVars(string file, string value)
         {
+            //Recoring session variables to config.xml
             if (file == "gpt")
             {
                 XmlDocument config = new XmlDocument();
@@ -92,6 +97,7 @@ namespace RenewAdmin
 
         public string retrieveSessionVars(string file)
         {
+            //Retrieving session variables from config.xml
             string result = "";
             XmlDocument config = new XmlDocument();
             config.Load(Program._Config.cPath);
@@ -114,6 +120,7 @@ namespace RenewAdmin
         #region Logging methods
         public void LogHistory(int state, string msg)
         {
+            //Log history element method
             XmlDocument report = new XmlDocument();
             report.Load(Program._Config.reportPath);
             XmlNode root = report.DocumentElement.SelectSingleNode("/Report/History");
@@ -128,6 +135,7 @@ namespace RenewAdmin
 
         public void LogReboots(int state, int rType)
         {
+            //Log reboot element method
             XmlDocument report = new XmlDocument();
             report.Load(Program._Config.reportPath);
             XmlNode root = report.DocumentElement.SelectSingleNode("/Report/Reboots");
@@ -142,6 +150,7 @@ namespace RenewAdmin
 
         public int GetSecondaryReboots()
         {
+            //Get secondary reboots
             int count=0;
             XmlDocument report = new XmlDocument();
             report.Load(Program._Config.reportPath);
@@ -152,6 +161,7 @@ namespace RenewAdmin
 
         public void LogResults()
         {
+            //Create result part of report.xml
             XmlDocument report = new XmlDocument();
             report.Load(Program._Config.reportPath);
             XmlNode root = report.DocumentElement.SelectSingleNode("/Report/Results");
