@@ -62,8 +62,6 @@ namespace RenewAdmin
                 w.WriteLine("@echo off");
                 w.WriteLine(@"drive = for /f ""tokens = 1 delims =\"" %%D in (""C:\Windows"") do echo %%D  ");
                 w.WriteLine(@"net localgroup """ + _Config.groupName + @""" %computername%\" + _Config.userName + " /add ");
-                w.WriteLine(@"cd """ + _appPath + @"""");
-                w.WriteLine(@"start """" RenewAdmin.exe " + _Config.cPath);
                 w.Close();
             }
             #endregion
