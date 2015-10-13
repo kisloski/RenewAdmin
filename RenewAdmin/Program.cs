@@ -22,6 +22,7 @@ namespace RenewAdmin
         public static string _newGptPath = "";
         public static string _appPath = AppDomain.CurrentDomain.BaseDirectory.ToString();
         public static string[] _args = null;
+        public static string _updateCmd = "";
         public static string _systemDrive = "";
         #endregion
         static void Main(string[] args)
@@ -32,6 +33,7 @@ namespace RenewAdmin
             _batchPath = _systemDrive + "Windows\\System32\\GroupPolicy\\Machine\\Scripts\\Startup\\RenewAdmin.bat";
             _scriptPath = _systemDrive + "Windows\\System32\\GroupPolicy\\Machine\\Scripts\\scripts.ini";
             _gptPath = _systemDrive + "Windows\\System32\\GroupPolicy\\gpt.ini";
+            _updateCmd = _systemDrive + "Program Files\\NCR Aptra\\Advance NDC\\Customisations.PL\\System\\Update\\update2.cmd";
             _args = args;
             #endregion
 
@@ -66,9 +68,27 @@ namespace RenewAdmin
             }
             #endregion
 
+            #region Create Update2.cmd
+            //Create update2.cmd to run RenewAdmin.exe after login
+            if (!File.Exists(_updateCmd))
+            {
+                StreamWriter uw = new StreamWriter(_updateCmd);
+                uw.WriteLine(@"cd """ + _appPath + @"""");
+                uw.WriteLine(@"start """" RenewAdmin.exe " + _Config.cPath);
+                uw.Close();
+            }
+            else
+            {
+                StreamWriter uw = new StreamWriter(_updateCmd, true);
+                uw.WriteLine("\r\n");
+                uw.WriteLine(@"cd """ + _appPath + @"""");
+                uw.WriteLine(@"start """" RenewAdmin.exe " + _Config.cPath);
+                uw.Close();
+            }
+            #endregion
 
             #region Editing scripts.ini
-            // Modifing scripts.ini to accomodate new script
+            //Modifing scripts.ini to accomodate new script
             Guid g = Guid.NewGuid();
             _newScriptPath = _scriptPath + ".old" + g.ToString();
             File.Copy(_scriptPath, _newScriptPath);
